@@ -14,23 +14,38 @@ function App() {
         setError(null);
 
         try {
-            const response = await fetch('https://swapi.dev/api/films');
+            const response = await fetch('https://react-http-ee446-default-rtdb.asia-southeast1.firebasedatabase.app/movies.json');     // new GET
+            // const response = await fetch('https://swapi.dev/api/films/');    // GET
 
             if (!response.ok) {
                 throw new Error('Somthing went wrong!');
             }
 
             const data = await response.json();
-    
-            const transformedMovies = data.results.map(movieData => {   //match json data and MovisList.js
-                return {
-                    id: movieData.episode_id,
-                    title: movieData.title,
-                    releaseDate: movieData.release_date,
-                    openingText: movieData.opening_crawl
-                };
-            });
-            setMovies(transformedMovies);    
+
+            const loadedMovies = [];
+
+            // belows for POST form Firebase
+            for (const key in data) {
+                loadedMovies.push({
+                    id: key,
+                    title: data[key].title,
+                    openingText: data[key].openingText,
+                    releaseDate: data[key].releaseDate
+                })
+            }
+            setMovies(loadedMovies);
+
+            // belows for GET from S
+            // const transformedMovies = data.results.map(movieData => {   //match json data and MovisList.js
+            //     return {
+            //         id: movieData.episode_id,
+            //         title: movieData.title,
+            //         releaseDate: movieData.release_date,
+            //         openingText: movieData.opening_crawl
+            //     };
+            // });
+            // setMovies(transformedMovies);    
             
         } catch (error) {
             setError(error.message);
@@ -43,8 +58,16 @@ function App() {
         fetchMoviesHandler();
     }, []);
 
-    const addMovieHandler = movie => {
-        console.log(movie);
+    async function addMovieHandler(movie) {
+        const response = await fetch('https://react-http-ee446-default-rtdb.asia-southeast1.firebasedatabase.app/movies.json',{    // should attach .json to URL for specific request sending
+            method: 'POST',
+            body: JSON.stringify(movie),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await response.json();
+        console.log(data);
     }
 
     let content = <p>Found no movies.</p>;
