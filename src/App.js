@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import MoviesList from './components/MoviesList';
 import './App.css';
@@ -7,6 +7,10 @@ function App() {
     const [movies, setMovies] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    useEffect(() => {
+        fetchMoviesHandler();
+    }, []);
 
     async function fetchMoviesHandler() {
         setIsLoading(true);
@@ -29,7 +33,7 @@ function App() {
                     openingText: movieData.opening_crawl
                 };
             });
-            setMovies(transformedMovies);    // if fetch json data sucessfully, set data.results(array format) as new Movies state
+            setMovies(transformedMovies);    
             
         } catch (error) {
             setError(error.message);
